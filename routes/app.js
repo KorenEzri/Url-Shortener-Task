@@ -4,7 +4,13 @@ const cors = require("cors");
 const app = express();
 const shortURL = require("./urlshortner");
 const utils = require("../net-utils");
-app.use(cors());
+app.use(
+  cors({
+    allowedHeaders: ["Content-Type"],
+    origin: "*",
+    preflightContinue: true,
+  })
+);
 app.use(express.json());
 app.use("/public", express.static(`./public`));
 app.use(shortURL.router);

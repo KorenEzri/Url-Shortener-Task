@@ -1,21 +1,24 @@
 //GET ALL URLS - DEFAULT BIN :)
 const axios = require("axios");
-// const koren = require("@korenezri/jsondb");
 
 const readBin = async () => {
   const allUrls = [];
-  const { data } = await axios({
-    method: "GET",
-    url: "http://localhost:3001/b/default",
-    data: {},
-  });
-  const binDataArray = data.record[0];
-  if (binDataArray) {
-    for (let i = 0; i < binDataArray.length; i++) {
-      allUrls.push(binDataArray[i]);
+  try {
+    const { data } = await axios({
+      method: "GET",
+      url: "http://localhost:3001/b/default",
+      data: {},
+    });
+    const binDataArray = data.record[0];
+    if (binDataArray) {
+      for (let i = 0; i < binDataArray.length; i++) {
+        allUrls.push(binDataArray[i]);
+      }
     }
+    return allUrls;
+  } catch (err) {
+    console.log(err);
   }
-  return allUrls;
 };
 
 // const addToBin = async (url, existingUrls) => {
@@ -40,14 +43,18 @@ const readBin = async () => {
 const addToBin = async (url, existingUrls) => {
   let allUrls = await readBin();
   allUrls.push(url);
-  let response = await axios({
-    method: "PUT",
-    url: "http://localhost:3001/b/default",
-    data: JSON.stringify(allUrls),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    let response = await axios({
+      method: "PUT",
+      url: "http://localhost:3001/b/default",
+      data: JSON.stringify(allUrls),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 module.exports = { readBin, addToBin };

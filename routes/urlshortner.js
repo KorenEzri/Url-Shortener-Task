@@ -1,10 +1,19 @@
 const express = require("express");
+const cors = require("cors");
 const shortid = require("shortid");
 const validUrl = require("valid-url");
 const controller = require("../controller");
 const dataBase = new controller.DataBase();
 const utils = require("../net-utils");
 let router = express.Router();
+
+router.use(
+  cors({
+    allowedHeaders: ["Content-Type"],
+    origin: "*",
+    preflightContinue: true,
+  })
+);
 
 router.put("/api/shorturl/", async (req, res) => {
   const longUrl = req.body.longUrl;
