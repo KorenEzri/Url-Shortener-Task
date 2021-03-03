@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>URL Shortener</title>
+    <link rel="icon" type="image/png" href="../public/favicon.ico" />
+    <link href="../public/style.css" rel="stylesheet" type="text/css" />
+    <script src="../public/client.js"></script>
+    <script src="../public/utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <h1>URL Shortener Microservice</h1>
+    <main>
+      <section>
+        <input
+          id="url-input"
+          type="text"
+          placeholder="Enter that sweet, long URL address"
+        />
+        <button type="button" id="input-button">Shorten URL</button>
+      </section>
+      <section>
+        <div id="url-presentor"></div>
+      </section>
+    </main>
+    <footer></footer>
+  </body>
+</html>
