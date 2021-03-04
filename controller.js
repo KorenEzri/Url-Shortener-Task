@@ -1,4 +1,4 @@
-const utils = require("./net-utils");
+const netUtils = require("./net-utils");
 
 class DataBase {
   constructor(urls = [], userIDs = []) {
@@ -6,16 +6,8 @@ class DataBase {
     this.userIDs = userIDs;
   }
 
-  async checkIfUrlExists(url) {
-    const binData = await utils.readBin();
-    console.log(binData);
-  }
-
   saveUrl(url) {
-    if (!this.checkIfUrlExists(url)) {
-      this.urls.push(url);
-    }
-    utils.addToBin(url);
+    netUtils.addToBin(url);
   }
 
   updateUrl() {}
@@ -24,11 +16,12 @@ class DataBase {
 }
 
 class Url {
-  constructor(long, short, urlCode, clickCount, owner) {
+  constructor(long, short, urlCode, clickCount, creationDate, owner) {
     this.long = long;
     this.short = short;
     this.urlCode = urlCode;
     this.clickCount = clickCount;
+    this.creationDate = creationDate;
     this.owner = owner;
   }
 }

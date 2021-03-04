@@ -21,25 +21,6 @@ const readBin = async () => {
   }
 };
 
-// const addToBin = async (url, existingUrls) => {
-//   let newUrlList = [];
-//   if (existingUrls) {
-//     newUrlList.concat(existingUrls);
-//     newUrlList.push(url);
-//   } else {
-//     newUrlList = await readBin();
-//     newUrlList.push(url);
-//   }
-//   let response = await axios({
-//     method: "PUT",
-//     url: "http://localhost:3001/b/default",
-//     data: JSON.stringify(newUrlList),
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   });
-// };
-
 const addToBin = async (url, existingUrls) => {
   let allUrls = await readBin();
   allUrls.push(url);

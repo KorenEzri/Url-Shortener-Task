@@ -1,0 +1,129 @@
+body {
+  font-size: 1rem;
+  color: #222;
+  background: rgb(40, 42, 187);
+  background: linear-gradient(
+    90deg,
+    rgba(40, 42, 187, 1) 0%,
+    rgba(77, 31, 184, 1) 36%,
+    rgba(125, 49, 208, 1) 100%,
+    rgba(77, 31, 184, 1) 100%
+  );
+  text-align: center;
+  line-height: 1.4em;
+}
+
+body * {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  line-height: 1.4em;
+}
+
+#input-section {
+  #url-input {
+    padding: 8px;
+    width: 220px;
+    border-radius: 4px;
+    background-color: wheat;
+    text-align: center;
+  }
+
+  #input-button {
+    box-shadow: inset 0px 1px 0px 0px #f9eca0;
+    background: linear-gradient(to bottom, #f0c911 5%, #f2ab1e 100%);
+    background-color: #f0c911;
+    border-radius: 6px;
+    border: 1px solid #e65f44;
+    display: inline-block;
+    cursor: pointer;
+    color: #000000;
+    font-family: Arial;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 6px 24px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #ded17c;
+    &:hover {
+      background: linear-gradient(to bottom, #f2ab1e 5%, #f0c911 100%);
+      background-color: #f2ab1e;
+    }
+    &:active {
+      position: relative;
+      top: 1px;
+    }
+  }
+
+  #input-button:focus {
+    outline: none;
+  }
+}
+
+#url-presentor {
+  margin-left: auto;
+  margin-right: auto;
+  height: 10vh;
+  width: 60vw;
+  margin-top: 2vh;
+  #shortened-url {
+    letter-spacing: 1.5px;
+    transition: 400ms;
+    display: inline-block;
+    margin-top: 12px;
+    color: #000000;
+    font-size: 20px;
+    text-decoration: none;
+    background-color: rgba(245, 245, 245, 0.822);
+    padding: 12px;
+    border-radius: 5px;
+  }
+  #shortened-url:hover {
+    transition: 700ms;
+    padding-left: 2vw;
+    padding-right: 2vw;
+    background-color: rgb(238, 225, 201);
+    font-size: 26px;
+  }
+}
+
+#main-wrapper {
+  display: grid;
+  grid-template-columns: 2fr 0.5fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-template-areas: ". . .";
+  border: 1px solid black;
+  margin-top: 4vh;
+  margin-right: auto;
+  margin-left: auto;
+  #stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 0px 0px;
+    grid-template-areas: ". . . . .";
+    background-color: white;
+    #links {
+      list-style-type: none;
+      margin: 12px;
+      .stored-url {
+        text-decoration: none;
+      }
+      .link-list-items {
+        padding-bottom: 6px;
+        font-size: 18px;
+      }
+    }
+    #original-links {
+    }
+    #shortcut-id {
+    }
+    #redirect-count {
+    }
+    #creation-date {
+    }
+  }
+  #registration {
+    word-break: break-all;
+    padding-right: 6px;
+  }
+}
