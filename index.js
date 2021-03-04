@@ -1,4 +1,5 @@
 const app = require("./routes/app");
+const { router } = require("./routes/urlshortner");
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
