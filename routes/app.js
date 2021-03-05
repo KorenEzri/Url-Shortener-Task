@@ -3,9 +3,10 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const shortURL = require("./urlshortner");
-const utils = require("../net-utils");
+const netUtils = require("../net-utils");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const bcrypt = require("bcrypt");
 
 app.use(
   cors({
@@ -22,9 +23,10 @@ app.get("/", (req, res) => {
 });
 app.use(helmet());
 app.use(morgan("tiny"));
+const saltRounds = 10;
 
 app.get("/:shortUrl", async (req, res) => {
-  const allUrls = await utils.readBin();
+  const allUrls = await netUtils.readBin();
   let shortUrlCode = req.params.shortUrl;
   let index = allUrls.findIndex((url) => url.urlCode === shortUrlCode);
   let longUrl = allUrls[index].long;
@@ -44,4 +46,41 @@ app.get("/:shortUrl", async (req, res) => {
   }
 });
 
+app.post("/register", async (req, res) => {
+  try {
+    const {
+      body: { username, password },
+    } = req;
+    bcrypt.hash(password, saltRounds, async function (err, hash) {
+      if (err) {
+        console.error(err);
+        return res.status(400).json({ success: false });
+      }
+      await netUtils.registerToService(username, hash);
+      return res.status(200).send("Successfully created a new user!");
+    });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+app.get("/login", async (req, res) => {
+  try {
+    const {
+      body: { username, password },
+    } = req;
+    const fileData = await netUtils.readBin("users");
+    const findUser = fileData.find(user => user.record[0].username === username);
+    const hash = findUser.record[0].password 
+    bcrypt.compare(password, hash, function (err, result) {
+      if (result == true) {
+    const id = findUser.record[0].id;
+    userFile = await netUtils.readBin(id)
+    res.status(200).send(userFile)
+      }
+    });
+  } catch (error) {
+    console.error(error);
+  }
+});
 module.exports = app;

@@ -166,10 +166,14 @@ body * {
     }
   }
   #registration {
+    display: flex;
+    flex-direction: column;
     position: relative;
-    word-break: break-all;
-    padding: 12px;
+    padding: 6px;
     top: -6vh;
     height: 160%;
+  }
+  #registration * {
+    margin: 2px;
   }
 }

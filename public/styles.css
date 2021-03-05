@@ -199,10 +199,20 @@ body * {
 }
 
 #main-wrapper #registration {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
   position: relative;
-  word-break: break-all;
-  padding: 12px;
+  padding: 6px;
   top: -6vh;
   height: 160%;
+}
+
+#main-wrapper #registration * {
+  margin: 2px;
 }
 /*# sourceMappingURL=styles.css.map */

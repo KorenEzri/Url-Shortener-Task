@@ -1,14 +1,17 @@
+const base_request_url = "http://localhost:3001";
+const main_request_url = "http://localhost:3000";
+
 const shortenURLrequest = async (longUrl) => {
   try {
     const { data } = await axios({
       method: "PUT",
-      url: "http://localhost:3000/api/shorturl",
+      url: `${main_request_url}/api/shorturl`,
       data: JSON.stringify({ longUrl }),
       headers: { "Content-Type": "application/json" },
     });
     return data.short;
-  } catch (error) {
-    console.log(error);
+  } catch ({ message }) {
+    console.log(message);
   }
 };
 
@@ -17,7 +20,7 @@ const getAllUrlObjects = async () => {
   try {
     const { data } = await axios({
       method: "GET",
-      url: "http://localhost:3001/b/default",
+      url: `${base_request_url}/b/default`,
       data: {},
     });
     const binDataArray = data.record[0];
@@ -27,7 +30,45 @@ const getAllUrlObjects = async () => {
       }
     }
     return allUrls;
-  } catch (err) {
-    console.log(err);
+  } catch ({ message }) {
+    console.log(message);
+  }
+};
+
+const registerToService = async (username, password) => {
+  try {
+    const { data } = await axios({
+      method: "POST",
+      url: `${main_request_url}/register`,
+      data: { username, password },
+    });
+    return alert(`Successfully registered as: ${username}`);
+  } catch ({ message }) {
+    console.log(message);
+  }
+};
+
+// const getFileIdByUsername = async (username) => {
+//   try {
+//     const { data } = await axios({
+//       method: "GET",
+//       url: `${main_request_url}/getId`,
+//       data: { username, password, id },
+//     });
+//   } catch ({ message }) {
+//     console.log(message);
+//   }
+// };
+
+const logIntoService = async (username, password, id) => {
+  try {
+    const { data } = await axios({
+      method: "GET",
+      url: `${main_request_url}/login`,
+      data: { username, password, id },
+    });
+    return alert(`Successfully logged in as: ${username}`);
+  } catch ({ message }) {
+    console.log(message);
   }
 };

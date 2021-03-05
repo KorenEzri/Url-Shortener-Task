@@ -13,6 +13,10 @@ class DataBase {
   updateUrl() {}
 
   deleteUrl() {}
+
+  // register(username, password) {
+  //   netUtils.registerToService(username, password);
+  // }
 }
 
 class Url {

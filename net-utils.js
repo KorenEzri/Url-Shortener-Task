@@ -1,12 +1,13 @@
 //GET ALL URLS - DEFAULT BIN :)
 const axios = require("axios");
-
-const readBin = async () => {
+const base_url = "http://localhost:3001";
+const readBin = async (location) => {
+  if (!location) location = "default";
   const allUrls = [];
   try {
     const { data } = await axios({
       method: "GET",
-      url: "http://localhost:3001/b/default",
+      url: `${base_url}/b/${location}`,
       data: {},
     });
     const binDataArray = data.record[0];
@@ -27,15 +28,32 @@ const addToBin = async (url, existingUrls) => {
   try {
     let response = await axios({
       method: "PUT",
-      url: "http://localhost:3001/b/default",
+      url: `${base_url}/b/default`,
       data: JSON.stringify(allUrls),
       headers: {
         "Content-Type": "application/json",
       },
     });
-  } catch (error) {
-    console.log(error);
+  } catch ({ message }) {
+    console.log(message);
   }
 };
 
-module.exports = { readBin, addToBin };
+const registerToService = async (username, password) => {
+  try {
+    let { data: response } = await axios({
+      method: "POST",
+      url: `${base_url}`,
+    });
+    console.log(response);
+    let { data: res2 } = await axios.put(`${base_url}/b/users`, {
+      username,
+      password,
+      id: response,
+    });
+  } catch ({ message }) {
+    console.log(message);
+  }
+};
+
+module.exports = { readBin, addToBin, registerToService };

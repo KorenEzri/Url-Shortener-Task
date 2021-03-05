@@ -3,6 +3,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const urlPresentor = document.querySelector("#url-presentor");
   const shortLinkList = document.querySelector("#links");
   const longLinkList = document.querySelector("#originals");
+  const registerButton = document.querySelector("#register-button");
+  const usernameInput = document.querySelector("#username-input").value;
+  const passwordInput = document.querySelector("#password-input").value;
   const createElements = (type, attributes, ...children) => {
     const element = document.createElement(type);
     for (key in attributes) {
@@ -33,20 +36,6 @@ window.addEventListener("DOMContentLoaded", () => {
     );
     urlPresentor.appendChild(resultedLink);
   };
-  inputButton.addEventListener("click", () => {
-    const existingUrl = document.querySelector("#shortened-url");
-    const urlPresentorPlaceholder = document.querySelector(
-      "#presentor-placeholder"
-    );
-    getShortURL();
-    if (existingUrl) {
-      urlPresentor.removeChild(existingUrl);
-      urlPresentor.style.backgroundColor = "rgba(245, 245, 245, 0.644);";
-    }
-
-    urlPresentor.style.backgroundColor = "unset";
-    urlPresentorPlaceholder.hidden = true;
-  });
 
   //FUNCTION: RENDER SHORT LINKS
 
@@ -125,5 +114,36 @@ window.addEventListener("DOMContentLoaded", () => {
     renderAllShortLinks(allUrlObjects);
     renderAllLongLinks(allUrlObjects);
   };
+
+  //REGISTER TO SERVICE
+  const registerUserFromClient = async () => {
+    await registerToService(usernameInput, passwordInput);
+  };
+
+  //SIGN IN TO SERVICE
+  const logUserInFromClient = async () => {
+    // const clientId = await getFileIdByUsername(usernameInput);
+    await logIntoService(usernameInput, passwordInput);
+  };
+
   renderStatsList();
+
+  inputButton.addEventListener("click", () => {
+    const existingUrl = document.querySelector("#shortened-url");
+    const urlPresentorPlaceholder = document.querySelector(
+      "#presentor-placeholder"
+    );
+    getShortURL();
+    if (existingUrl) {
+      urlPresentor.removeChild(existingUrl);
+      urlPresentor.style.backgroundColor = "rgba(245, 245, 245, 0.644);";
+    }
+
+    urlPresentor.style.backgroundColor = "unset";
+    urlPresentorPlaceholder.hidden = true;
+  });
+
+  registerButton.addEventListener("click", () => {
+    registerUserFromClient();
+  });
 });
