@@ -6,8 +6,12 @@ class DataBase {
     this.userIDs = userIDs;
   }
 
-  saveUrl(url) {
-    netUtils.addToBin(url);
+  saveUrl(url, location) {
+    if (location) {
+      netUtils.addToBin(url, location);
+    } else {
+      netUtils.addToBin(url);
+    }
   }
 
   updateUrl() {}

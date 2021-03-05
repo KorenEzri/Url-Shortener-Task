@@ -17,21 +17,45 @@ const readBin = async (location) => {
         allUrls.push(binDataArray[i]);
       }
       return allUrls;
-    } else {
+    } else if (location === "users") {
       return data.record;
+    } else if (!data.record[0]) {
+      return data;
+    } else {
+      for (let i = 0; i < binDataArray.length; i++) {
+        allUrls.push(binDataArray[i]);
+      }
+      return allUrls;
     }
   } catch ({ message }) {
     console.log(message);
   }
 };
 
-const addToBin = async (url, existingUrls) => {
-  let allUrls = await readBin();
-  allUrls.push(url);
+const addToBin = async (url, location) => {
+  let allUrls;
+  if (!location) {
+    location = "default";
+    allUrls = await readBin();
+  } else if (location) {
+    usersFile = await readBin(location);
+    if (!usersFile) {
+      allUrls = usersFile.record;
+    } else {
+      allUrls = usersFile;
+    }
+  }
+  console.log(allUrls);
+  if (Array.isArray(allUrls)) {
+    allUrls.push(url);
+  } else {
+    allUrls = allUrls.record;
+    allUrls.push(url);
+  }
   try {
     let response = await axios({
       method: "PUT",
-      url: `${base_url}/b/default`,
+      url: `${base_url}/b/${location}`,
       data: JSON.stringify(allUrls),
       headers: {
         "Content-Type": "application/json",
@@ -48,14 +72,15 @@ const registerToService = async (username, password, old) => {
       method: "POST",
       url: `${base_url}`,
     });
+    let userObj = {
+      username,
+      password,
+      id: response,
+    };
     if (old) {
-      old.push({
-        username,
-        password,
-        id: response,
-      });
+      old.push(userObj);
     } else if (!old) {
-      old = { username, password, id: response };
+      old = userObj;
     }
     let { data: res2 } = await axios.put(`${base_url}/b/users`, old);
   } catch ({ message }) {

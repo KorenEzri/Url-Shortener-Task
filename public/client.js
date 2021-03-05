@@ -6,6 +6,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const registerButton = document.querySelector("#register-button");
   const logInButton = document.querySelector("#login-button");
   let isLoggedIn = false;
+  let user;
   const createElements = (type, attributes, ...children) => {
     const element = document.createElement(type);
     for (key in attributes) {
@@ -20,12 +21,21 @@ window.addEventListener("DOMContentLoaded", () => {
     });
     return element;
   };
-
+  setInterval(() => {
+    console.log(isLoggedIn);
+  }, 5000);
   //RENDER SHORTENED URL
-  const getShortURL = async () => {
+
+  //STOPPED HERE
+  const getShortURL = async (isLogged) => {
     const urlInput = document.querySelector("#url-input");
     const url = urlInput.value;
-    const shortenedUrl = await shortenURLrequest(url);
+    let shortenedUrl;
+    if (isLogged) {
+      shortenedUrl = await shortenURLrequest(url, user);
+    } else {
+      shortenedUrl = await shortenURLrequest(url);
+    }
     if (!shortenedUrl) {
       return alert("Invalid URL");
     }
@@ -88,7 +98,6 @@ window.addEventListener("DOMContentLoaded", () => {
       longLinkList.appendChild(details);
     });
   };
-
   const renderAllLinkIDs = async (allUrls) => {
     allUrls.forEach((url) => {
       id_list_item = createElements(
@@ -110,9 +119,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
   //RENDER "STATS" LIST
   const renderStatsList = async (user) => {
+    let allUrlObjects;
     if (isLoggedIn && user) {
+      allUrlObjects = user.urls;
+    } else {
+      allUrlObjects = await getAllUrlObjects();
     }
-    const allUrlObjects = await getAllUrlObjects();
     renderAllShortLinks(allUrlObjects);
     renderAllLongLinks(allUrlObjects);
   };
@@ -121,8 +133,12 @@ window.addEventListener("DOMContentLoaded", () => {
   const logUserInFromClient = async () => {
     const passwordInput = document.querySelector("#password-input").value;
     const usernameInput = document.querySelector("#username-input").value;
-    await logIntoService(usernameInput, passwordInput);
+    user = await logIntoService(usernameInput, passwordInput);
     isLoggedIn = true;
+    await pingLocation(user);
+    if (!user.urls) {
+      return;
+    }
     renderStatsList(user);
   };
 
@@ -133,7 +149,12 @@ window.addEventListener("DOMContentLoaded", () => {
     const urlPresentorPlaceholder = document.querySelector(
       "#presentor-placeholder"
     );
-    getShortURL();
+    if (isLoggedIn) {
+      getShortURL("isLogged");
+    } else {
+      getShortURL();
+    }
+
     if (existingUrl) {
       urlPresentor.removeChild(existingUrl);
       urlPresentor.style.backgroundColor = "rgba(245, 245, 245, 0.644);";

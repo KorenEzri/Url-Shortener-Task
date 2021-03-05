@@ -35,21 +35,35 @@ router.use(
 );
 
 router.put("/api/shorturl/", async (req, res) => {
-  const longUrl = req.body.longUrl;
+  const { longUrl, id } = req.body;
   const baseUrl = "http://localhost:3000";
   const urlCode = shortid.generate();
+  let urls;
+  let alreadyShortened;
   if (validUrl.isHttpUri(longUrl) || validUrl.isHttpsUri(longUrl)) {
     try {
-      const urls = await utils.readBin();
-      const alreadyShortened = urls.find(
-        (element) => element.long === `${longUrl}`
-      );
+      if (id) {
+        urls = await utils.readBin(id);
+      } else {
+        urls = await utils.readBin();
+      }
+      if (urls[0]) {
+        alreadyShortened = urls.find(
+          (element) => element.long === `${longUrl}`
+        );
+      } else {
+        !alreadyShortened;
+      }
       if (alreadyShortened) {
         return res.status(200).json(alreadyShortened);
       } else {
         const shortUrl = baseUrl + "/" + urlCode;
         url = new controller.Url(longUrl, shortUrl, urlCode, 0, comfyDate());
-        dataBase.saveUrl(url);
+        if (id) {
+          dataBase.saveUrl(url, id);
+        } else {
+          dataBase.saveUrl(url);
+        }
         return res.status(200).send(`${JSON.stringify(url, null, 2)}`);
       }
     } catch (err) {

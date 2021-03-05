@@ -1,12 +1,19 @@
 const base_request_url = "http://localhost:3001";
 const main_request_url = "http://localhost:3000";
 
-const shortenURLrequest = async (longUrl) => {
+const shortenURLrequest = async (longUrl, user) => {
   try {
+    let body;
+    if (user) {
+      id = user.id;
+      body = { longUrl, id };
+    } else {
+      body = { longUrl };
+    }
     const { data } = await axios({
       method: "PUT",
       url: `${main_request_url}/api/shorturl`,
-      data: JSON.stringify({ longUrl }),
+      data: JSON.stringify(body),
       headers: { "Content-Type": "application/json" },
     });
     return data.short;
@@ -56,6 +63,19 @@ const logIntoService = async (username, password) => {
       data: { username, password },
     });
     return data;
+  } catch ({ message }) {
+    console.log(message);
+  }
+};
+
+const pingLocation = async (user) => {
+  try {
+    await axios({
+      method: "PUT",
+      url: `${main_request_url}/ping`,
+      data: user,
+    });
+    return;
   } catch ({ message }) {
     console.log(message);
   }

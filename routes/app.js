@@ -24,10 +24,15 @@ app.get("/", (req, res) => {
 });
 app.use(helmet());
 app.use(morgan("tiny"));
+let location;
+app.put("/ping", async (req, res) => {
+  location = req.body.id;
+  res.status(200).send(location);
+});
 const saltRounds = 10;
 
 app.get("/:shortUrl", async (req, res) => {
-  const allUrls = await netUtils.readBin();
+  const allUrls = await netUtils.readBin(location);
   let shortUrlCode = req.params.shortUrl;
   let index = allUrls.findIndex((url) => url.urlCode === shortUrlCode);
   let longUrl = allUrls[index].long;
@@ -59,7 +64,11 @@ app.post("/register", async (req, res) => {
       }
       const fileData = await netUtils.readBin("users");
       if (fileData[0]) {
-        await netUtils.registerToService(username, hash, fileData);
+        if (Array.isArray(fileData[0])) {
+          await netUtils.registerToService(username, hash, fileData[0]);
+        } else {
+          await netUtils.registerToService(username, hash, fileData);
+        }
       } else {
         await netUtils.registerToService(username, hash);
       }
@@ -72,18 +81,22 @@ app.post("/register", async (req, res) => {
 
 app.put("/login", async (req, res) => {
   try {
-    const {
-      body: { username, password },
-    } = req;
+    const { username, password } = req.body;
     const fileData = await netUtils.readBin("users");
-    const findUser = fileData[0].find((user) => user.username === username);
+    let findUser;
+    if (fileData[0].length > 1) {
+      findUser = fileData[0].find((user) => user.username === username);
+    } else {
+      findUser = fileData.find((user) => user.username === username);
+    }
+    console.log(fileData);
     const hash = findUser.password;
     await bcrypt.compare(password, hash, async function (err, result) {
       if (result == true) {
         const id = findUser.id;
         userFile = await netUtils.readBin(id);
         const user = new controller.User(
-          userFile[0],
+          userFile,
           findUser.username,
           findUser.id
         );
