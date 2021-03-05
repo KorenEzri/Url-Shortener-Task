@@ -30,4 +30,12 @@ class Url {
   }
 }
 
-module.exports = { DataBase, Url };
+class User {
+  constructor(urls, username, id) {
+    this.urls = urls;
+    this.username = username;
+    this.id = id;
+  }
+}
+
+module.exports = { DataBase, Url, User };

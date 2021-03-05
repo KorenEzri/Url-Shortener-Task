@@ -7,6 +7,7 @@ const netUtils = require("../net-utils");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const bcrypt = require("bcrypt");
+const controller = require("../controller");
 
 app.use(
   cors({
@@ -56,7 +57,12 @@ app.post("/register", async (req, res) => {
         console.error(err);
         return res.status(400).json({ success: false });
       }
-      await netUtils.registerToService(username, hash);
+      const fileData = await netUtils.readBin("users");
+      if (fileData[0]) {
+        await netUtils.registerToService(username, hash, fileData);
+      } else {
+        await netUtils.registerToService(username, hash);
+      }
       return res.status(200).send("Successfully created a new user!");
     });
   } catch (error) {
@@ -70,12 +76,18 @@ app.put("/login", async (req, res) => {
       body: { username, password },
     } = req;
     const fileData = await netUtils.readBin("users");
-    const hash = fileData[0].password;
-    bcrypt.compare(password, hash, async function (err, result) {
+    const findUser = fileData[0].find((user) => user.username === username);
+    const hash = findUser.password;
+    await bcrypt.compare(password, hash, async function (err, result) {
       if (result == true) {
-        const id = fileData[0].id;
+        const id = findUser.id;
         userFile = await netUtils.readBin(id);
-        res.status(200).send(JSON.stringify(userFile));
+        const user = new controller.User(
+          userFile[0],
+          findUser.username,
+          findUser.id
+        );
+        res.status(200).send(JSON.stringify(user));
       } else if (result == false) {
         res.status(400).json({ message: `user not found` });
       }

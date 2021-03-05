@@ -5,8 +5,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const longLinkList = document.querySelector("#originals");
   const registerButton = document.querySelector("#register-button");
   const logInButton = document.querySelector("#login-button");
-  const usernameInput = document.querySelector("#username-input").value;
-  const passwordInput = document.querySelector("#password-input").value;
+  let isLoggedIn = false;
   const createElements = (type, attributes, ...children) => {
     const element = document.createElement(type);
     for (key in attributes) {
@@ -110,7 +109,9 @@ window.addEventListener("DOMContentLoaded", () => {
   };
 
   //RENDER "STATS" LIST
-  const renderStatsList = async () => {
+  const renderStatsList = async (user) => {
+    if (isLoggedIn && user) {
+    }
     const allUrlObjects = await getAllUrlObjects();
     renderAllShortLinks(allUrlObjects);
     renderAllLongLinks(allUrlObjects);
@@ -118,10 +119,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
   //SIGN IN TO SERVICE
   const logUserInFromClient = async () => {
+    const passwordInput = document.querySelector("#password-input").value;
+    const usernameInput = document.querySelector("#username-input").value;
     await logIntoService(usernameInput, passwordInput);
+    isLoggedIn = true;
+    renderStatsList(user);
   };
 
-  renderStatsList();
+  // renderStatsList();
 
   inputButton.addEventListener("click", () => {
     const existingUrl = document.querySelector("#shortened-url");
@@ -140,6 +145,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
   //REGISTER TO SERVICE
   registerButton.addEventListener("click", async () => {
+    const passwordInput = document.querySelector("#password-input").value;
+    const usernameInput = document.querySelector("#username-input").value;
+
     await registerToService(usernameInput, passwordInput);
   });
 

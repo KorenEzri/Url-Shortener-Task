@@ -20,8 +20,8 @@ const readBin = async (location) => {
     } else {
       return data.record;
     }
-  } catch (err) {
-    console.log(err);
+  } catch ({ message }) {
+    console.log(message);
   }
 };
 
@@ -42,18 +42,22 @@ const addToBin = async (url, existingUrls) => {
   }
 };
 
-const registerToService = async (username, password) => {
+const registerToService = async (username, password, old) => {
   try {
     let { data: response } = await axios({
       method: "POST",
       url: `${base_url}`,
     });
-    console.log(response);
-    let { data: res2 } = await axios.put(`${base_url}/b/users`, {
-      username,
-      password,
-      id: response,
-    });
+    if (old) {
+      old.push({
+        username,
+        password,
+        id: response,
+      });
+    } else if (!old) {
+      old = { username, password, id: response };
+    }
+    let { data: res2 } = await axios.put(`${base_url}/b/users`, old);
   } catch ({ message }) {
     console.log(message);
   }

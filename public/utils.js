@@ -50,16 +50,13 @@ const registerToService = async (username, password) => {
 
 const logIntoService = async (username, password) => {
   try {
-    console.log("arrived");
     const { data } = await axios({
       method: "PUT",
       url: `${main_request_url}/login`,
       data: { username, password },
     });
-    console.log(data);
     return data;
   } catch ({ message }) {
-    console.log("fucked up");
     console.log(message);
   }
 };
