@@ -64,19 +64,20 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.get("/login", async (req, res) => {
+app.put("/login", async (req, res) => {
   try {
     const {
       body: { username, password },
     } = req;
     const fileData = await netUtils.readBin("users");
-    const findUser = fileData.find(user => user.record[0].username === username);
-    const hash = findUser.record[0].password 
-    bcrypt.compare(password, hash, function (err, result) {
+    const hash = fileData[0].password;
+    bcrypt.compare(password, hash, async function (err, result) {
       if (result == true) {
-    const id = findUser.record[0].id;
-    userFile = await netUtils.readBin(id)
-    res.status(200).send(userFile)
+        const id = fileData[0].id;
+        userFile = await netUtils.readBin(id);
+        res.status(200).send(JSON.stringify(userFile));
+      } else if (result == false) {
+        res.status(400).json({ message: `user not found` });
       }
     });
   } catch (error) {

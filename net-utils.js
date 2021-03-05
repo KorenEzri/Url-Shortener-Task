@@ -1,6 +1,7 @@
 //GET ALL URLS - DEFAULT BIN :)
 const axios = require("axios");
 const base_url = "http://localhost:3001";
+
 const readBin = async (location) => {
   if (!location) location = "default";
   const allUrls = [];
@@ -11,12 +12,14 @@ const readBin = async (location) => {
       data: {},
     });
     const binDataArray = data.record[0];
-    if (binDataArray) {
+    if (location === "default" && binDataArray) {
       for (let i = 0; i < binDataArray.length; i++) {
         allUrls.push(binDataArray[i]);
       }
+      return allUrls;
+    } else {
+      return data.record;
     }
-    return allUrls;
   } catch (err) {
     console.log(err);
   }

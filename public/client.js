@@ -4,6 +4,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const shortLinkList = document.querySelector("#links");
   const longLinkList = document.querySelector("#originals");
   const registerButton = document.querySelector("#register-button");
+  const logInButton = document.querySelector("#login-button");
   const usernameInput = document.querySelector("#username-input").value;
   const passwordInput = document.querySelector("#password-input").value;
   const createElements = (type, attributes, ...children) => {
@@ -115,14 +116,8 @@ window.addEventListener("DOMContentLoaded", () => {
     renderAllLongLinks(allUrlObjects);
   };
 
-  //REGISTER TO SERVICE
-  const registerUserFromClient = async () => {
-    await registerToService(usernameInput, passwordInput);
-  };
-
   //SIGN IN TO SERVICE
   const logUserInFromClient = async () => {
-    // const clientId = await getFileIdByUsername(usernameInput);
     await logIntoService(usernameInput, passwordInput);
   };
 
@@ -143,7 +138,12 @@ window.addEventListener("DOMContentLoaded", () => {
     urlPresentorPlaceholder.hidden = true;
   });
 
-  registerButton.addEventListener("click", () => {
-    registerUserFromClient();
+  //REGISTER TO SERVICE
+  registerButton.addEventListener("click", async () => {
+    await registerToService(usernameInput, passwordInput);
+  });
+
+  logInButton.addEventListener("click", () => {
+    logUserInFromClient();
   });
 });

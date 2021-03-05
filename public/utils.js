@@ -48,27 +48,18 @@ const registerToService = async (username, password) => {
   }
 };
 
-// const getFileIdByUsername = async (username) => {
-//   try {
-//     const { data } = await axios({
-//       method: "GET",
-//       url: `${main_request_url}/getId`,
-//       data: { username, password, id },
-//     });
-//   } catch ({ message }) {
-//     console.log(message);
-//   }
-// };
-
-const logIntoService = async (username, password, id) => {
+const logIntoService = async (username, password) => {
   try {
+    console.log("arrived");
     const { data } = await axios({
-      method: "GET",
+      method: "PUT",
       url: `${main_request_url}/login`,
-      data: { username, password, id },
+      data: { username, password },
     });
-    return alert(`Successfully logged in as: ${username}`);
+    console.log(data);
+    return data;
   } catch ({ message }) {
+    console.log("fucked up");
     console.log(message);
   }
 };
