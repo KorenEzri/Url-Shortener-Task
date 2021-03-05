@@ -25,7 +25,6 @@ body * {
     width: 220px;
     border-radius: 4px;
     background-color: wheat;
-    text-align: center;
   }
 
   #input-button {
@@ -59,40 +58,52 @@ body * {
 }
 
 #url-presentor {
+  transition: 470ms;
   margin-left: auto;
   margin-right: auto;
-  height: 10vh;
-  width: 60vw;
+  height: 6vh;
+  width: 29vw;
   margin-top: 2vh;
+  border-radius: 6px;
+  background-color: rgba(245, 245, 245, 0.644);
+
+  #presentor-placeholder {
+    position: relative;
+    top: 10px;
+    font-size: 14px;
+    font-style: italic;
+    color: rgba(77, 76, 76, 0.534);
+  }
   #shortened-url {
     letter-spacing: 1.5px;
-    transition: 400ms;
+    transition: 470ms;
+
     display: inline-block;
-    margin-top: 12px;
     color: #000000;
-    font-size: 20px;
+    font-size: 16px;
     text-decoration: none;
     background-color: rgba(245, 245, 245, 0.822);
-    padding: 12px;
+    padding: 10px;
     border-radius: 5px;
   }
   #shortened-url:hover {
     transition: 700ms;
-    padding-left: 2vw;
-    padding-right: 2vw;
+    padding-left: 0.8vw;
+    padding-right: 0.8vw;
     background-color: rgb(238, 225, 201);
-    font-size: 26px;
+    font-size: 18px;
   }
 }
-
+#stats-grid * {
+  text-decoration: none;
+}
 #main-wrapper {
   display: grid;
   grid-template-columns: 2fr 0.5fr;
   grid-template-rows: 1fr;
   gap: 0px 0px;
   grid-template-areas: ". . .";
-  border: 1px solid black;
-  margin-top: 4vh;
+  margin-top: 2vh;
   margin-right: auto;
   margin-left: auto;
   #stats-grid {
@@ -102,28 +113,63 @@ body * {
     gap: 0px 0px;
     grid-template-areas: ". . . . .";
     background-color: white;
+    height: 100%;
     #links {
       list-style-type: none;
-      margin: 12px;
-      .stored-url {
-        text-decoration: none;
-      }
       .link-list-items {
-        padding-bottom: 6px;
-        font-size: 18px;
+        padding-top: 6px;
+        font-size: 14px;
       }
     }
-    #original-links {
+    #originals {
+      list-style-type: none;
+      font-size: 14px;
+      word-break: break-all;
+      .original-link {
+        font-size: 14px;
+      }
+      .stat-summary {
+        padding: 6px;
+      }
+      .stat-summary:focus {
+        outline: none;
+      }
+      details[open] summary ~ * {
+        animation: sweep 0.5s ease-in-out;
+        background-color: whitesmoke;
+        padding: 6px;
+        border-radius: 6px;
+      }
+
+      @keyframes sweep {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+          margin-left: 0px;
+        }
+      }
     }
     #shortcut-id {
+      list-style-type: none;
+      font-size: 14px;
     }
     #redirect-count {
+      list-style-type: none;
+      font-size: 14px;
     }
     #creation-date {
+      list-style-type: none;
+      font-size: 14px;
+      margin-right: 12px;
     }
   }
   #registration {
+    position: relative;
     word-break: break-all;
-    padding-right: 6px;
+    padding: 12px;
+    top: -6vh;
+    height: 160%;
   }
 }

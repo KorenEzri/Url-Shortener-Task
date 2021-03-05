@@ -57,11 +57,7 @@ router.put("/api/shorturl/", async (req, res) => {
       return res.status(500).json("Internal Server error " + err.message);
     }
   } else {
-    res
-      .status(400)
-      .json(
-        `Invalid URL. Please enter a valid url for shortening. url: ${longUrl}`
-      );
+    res.status(400).json({ msg: `Invalid URL` });
   }
 });
 

@@ -4,6 +4,9 @@ const cors = require("cors");
 const app = express();
 const shortURL = require("./urlshortner");
 const utils = require("../net-utils");
+const helmet = require("helmet");
+const morgan = require("morgan");
+
 app.use(
   cors({
     allowedHeaders: ["Content-Type"],
@@ -14,10 +17,11 @@ app.use(
 app.use(express.json());
 app.use("/public", express.static(`./public`));
 app.use(shortURL.router);
-
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
+app.use(helmet());
+app.use(morgan("tiny"));
 
 app.get("/:shortUrl", async (req, res) => {
   const allUrls = await utils.readBin();
