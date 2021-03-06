@@ -70,12 +70,25 @@ const logIntoService = async (username, password) => {
 
 const pingLocation = async (user) => {
   try {
-    await axios({
+    const { data } = await axios({
       method: "PUT",
       url: `${main_request_url}/ping`,
       data: user,
     });
-    return;
+    return data;
+  } catch ({ message }) {
+    console.log(message);
+  }
+};
+
+const getClickStatistics = async (user) => {
+  try {
+    const { data } = await axios({
+      method: "PUT",
+      url: `${main_request_url}/clicks`,
+      data: user,
+    });
+    return data;
   } catch ({ message }) {
     console.log(message);
   }

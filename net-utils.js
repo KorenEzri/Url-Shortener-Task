@@ -45,7 +45,6 @@ const addToBin = async (url, location) => {
       allUrls = usersFile;
     }
   }
-  console.log(allUrls);
   if (Array.isArray(allUrls)) {
     allUrls.push(url);
   } else {

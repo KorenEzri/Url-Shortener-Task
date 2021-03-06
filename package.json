@@ -19,12 +19,15 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-winston": "^4.1.0",
     "helmet": "^4.4.1",
     "morgan": "^1.10.0",
+    "path": "^0.12.7",
     "sass": "^1.32.8",
     "shortid": "^2.2.16",
     "uninstall": "0.0.0",
-    "valid-url": "^1.0.9"
+    "valid-url": "^1.0.9",
+    "winston": "^3.3.3"
   },
   "license": "MIT",
   "devDependencies": {

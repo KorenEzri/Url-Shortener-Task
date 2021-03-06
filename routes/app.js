@@ -8,6 +8,45 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const bcrypt = require("bcrypt");
 const controller = require("../controller");
+const fs = require("fs");
+const path = require("path");
+const expressWinston = require("express-winston");
+const winston = require("winston");
+
+// app.use(
+//   morgan("common", {
+//     stream: fs.createWriteStream(path.join(__dirname, "statistics.log"), {
+//       flags: "a",
+//       skip: function (req, res) {
+//         if (req.method !== "GET") {
+//           return true;
+//         }
+//       },
+//     }),
+//   })
+// );
+
+app.use(
+  expressWinston.logger({
+    transports: [
+      new winston.transports.Console({
+        colorize: true,
+        silent: true,
+      }),
+      new winston.transports.File({
+        name: "access-file",
+        filename: "routes/statistics.json",
+        level: "info",
+        format: winston.format.json(),
+      }),
+    ],
+    ignoreRoute: function (req, res) {
+      if (req.method !== "GET") {
+        return true;
+      }
+    },
+  })
+);
 
 app.use(
   cors({
@@ -27,7 +66,11 @@ app.use(morgan("tiny"));
 let location;
 app.put("/ping", async (req, res) => {
   location = req.body.id;
-  res.status(200).send(location);
+  const oldUser = req.body;
+  const updatedUserUrlList = await netUtils.readBin(location);
+  oldUser.urls = updatedUserUrlList;
+  const updatedUser = oldUser;
+  res.status(200).send(updatedUser);
 });
 const saltRounds = 10;
 
@@ -35,9 +78,14 @@ app.get("/:shortUrl", async (req, res) => {
   const allUrls = await netUtils.readBin(location);
   let shortUrlCode = req.params.shortUrl;
   let index = allUrls.findIndex((url) => url.urlCode === shortUrlCode);
+  console.log(index);
+  const fullUrlObject = allUrls[index];
+  console.log(fullUrlObject);
   let longUrl = allUrls[index].long;
   try {
     if (longUrl) {
+      const newClickCount = allUrls[index].clickCount++;
+      fullUrlObject.clickCount = newClickCount;
       res.redirect(longUrl);
     } else {
       return res
@@ -89,7 +137,6 @@ app.put("/login", async (req, res) => {
     } else {
       findUser = fileData.find((user) => user.username === username);
     }
-    console.log(fileData);
     const hash = findUser.password;
     await bcrypt.compare(password, hash, async function (err, result) {
       if (result == true) {
@@ -105,6 +152,29 @@ app.put("/login", async (req, res) => {
         res.status(400).json({ message: `user not found` });
       }
     });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+app.put("/clicks", async (req, res) => {
+  try {
+    const clickStatistics = [];
+    const loggerFile = fs.readFile(
+      "routes/statistics.json",
+      "utf8",
+      (err, stats) => {
+        const { level, message, originalUrl, ...meta } = stats;
+        const splatStat = stats.split(",");
+        const result = [];
+        const urls = stats.match(/\b \/.*/g);
+        urls.forEach((url) => {
+          pureUrl = url.substring(2, url.length - 2);
+          result.push(pureUrl);
+        });
+        return res.status(200).send(result);
+      }
+    );
   } catch (error) {
     console.error(error);
   }
