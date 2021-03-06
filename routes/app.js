@@ -33,7 +33,6 @@ app.use(
     },
   })
 );
-
 app.use(
   cors({
     allowedHeaders: ["Content-Type"],
@@ -50,6 +49,7 @@ app.get("/", (req, res) => {
 app.use(helmet());
 app.use(morgan("tiny"));
 let location;
+
 app.put("/ping", async (req, res) => {
   location = req.body.id;
   const oldUser = req.body;
@@ -64,9 +64,7 @@ app.get("/:shortUrl", async (req, res) => {
   const allUrls = await netUtils.readBin(location);
   let shortUrlCode = req.params.shortUrl;
   let index = allUrls.findIndex((url) => url.urlCode === shortUrlCode);
-  console.log(index);
   const fullUrlObject = allUrls[index];
-  console.log(fullUrlObject);
   let longUrl = allUrls[index].long;
   try {
     if (longUrl) {
