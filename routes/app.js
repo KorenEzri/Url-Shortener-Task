@@ -9,22 +9,8 @@ const morgan = require("morgan");
 const bcrypt = require("bcrypt");
 const controller = require("../controller");
 const fs = require("fs");
-const path = require("path");
 const expressWinston = require("express-winston");
 const winston = require("winston");
-
-// app.use(
-//   morgan("common", {
-//     stream: fs.createWriteStream(path.join(__dirname, "statistics.log"), {
-//       flags: "a",
-//       skip: function (req, res) {
-//         if (req.method !== "GET") {
-//           return true;
-//         }
-//       },
-//     }),
-//   })
-// );
 
 app.use(
   expressWinston.logger({

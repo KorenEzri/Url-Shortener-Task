@@ -4,6 +4,7 @@ const shortid = require("shortid");
 const validUrl = require("valid-url");
 const controller = require("../controller");
 const dataBase = new controller.DataBase();
+const bodyParser = require("body-parser");
 const utils = require("../net-utils");
 const comfyDate = () => {
   const current_datetime = new Date();
@@ -25,7 +26,8 @@ const comfyDate = () => {
   return formatted_date;
 };
 let router = express.Router();
-
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: false }));
 router.use(
   cors({
     allowedHeaders: ["Content-Type"],
@@ -35,6 +37,7 @@ router.use(
 );
 
 router.put("/api/shorturl/", async (req, res) => {
+  console.log("THIS IS THE REQ BODY: ", req.body);
   const { longUrl, id } = req.body;
   const baseUrl = "http://localhost:3000";
   const urlCode = shortid.generate();
@@ -70,9 +73,10 @@ router.put("/api/shorturl/", async (req, res) => {
       console.error(err.message);
       return res.status(500).json("Internal Server error " + err.message);
     }
-  } else {
-    res.status(400).json({ msg: `Invalid URL` });
   }
+  //  else {
+  //   res.status(400).json({ msg: `Invalid URL` });
+  // }
 });
 
 module.exports = { router, dataBase };
