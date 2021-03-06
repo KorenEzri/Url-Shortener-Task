@@ -20,6 +20,17 @@ body * {
 }
 
 #input-section {
+  user-select: none;
+
+  #greet-user {
+    display: flex;
+    font-size: 1rem;
+    margin-left: 2vw;
+    margin-top: -6vh;
+    .welcome-h1 {
+      padding-left: 4px;
+    }
+  }
   #url-input {
     padding: 8px;
     width: 220px;
@@ -58,6 +69,8 @@ body * {
 }
 
 #url-presentor {
+  user-select: none;
+
   transition: 470ms;
   margin-left: auto;
   margin-right: auto;
@@ -114,6 +127,9 @@ body * {
     grid-template-areas: ". . . . .";
     background-color: white;
     height: 100%;
+    .table-label {
+      user-select: none;
+    }
     #links {
       list-style-type: none;
       .link-list-items {

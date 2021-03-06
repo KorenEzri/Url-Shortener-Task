@@ -1,28 +1,51 @@
 window.addEventListener("DOMContentLoaded", () => {
+  // CONSTS
+
+  //BUTTONS
   const inputButton = document.querySelector("#input-button");
-  const urlPresentor = document.querySelector("#url-presentor");
+  const registerButton = document.querySelector("#register-button");
+  const logInButton = document.querySelector("#login-button");
+  const logOutButton = document.querySelector("#logout-button");
+  // STAT LIST CONSTS
   const shortLinkList = document.querySelector("#links");
   const longLinkList = document.querySelector("#originals");
   const linkIDList = document.querySelector("#shortcut-id");
   const linkRedirectCountList = document.querySelector("#redirect-count");
-  const registerButton = document.querySelector("#register-button");
-  const logInButton = document.querySelector("#login-button");
+  const creationDateList = document.querySelector("#creation-date");
   const allStats = document.querySelector("#stats-grid");
+  const linkUl = document.querySelector("#links");
+  // SHORT URL RESULT (ABOVE STAT TABLE) CONSTS
+  const urlPresentor = document.querySelector("#url-presentor");
+  // WELCOME TAG
+  const welcomeTag = document.querySelector("#greet-user");
+  // LOCALSTORAGE AND USER AUTH FUNCS AND VARIABLES
   let user;
-  const storedUser = () => {
+
+  /////////// FUNCTIONS ///////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // FUNCTION getStoredUserObject() - THIS REMOVES THE USER OBJECT FROM LOCALSTORAGE IF IT'S UNDEFINED, ELSE IT FETCHES AND RETURNS IT
+  const getStoredUserObject = () => {
     if (!localStorage.getItem("user")) {
       localStorage.removeItem("user");
+      return false;
     } else {
       return JSON.parse(localStorage.getItem("user"));
     }
   };
 
+  // THIS SENDS A PING TO THE DATABASE AND TELLS IT WHICH USER IS CURRENTLY LOGGED IN. IT ALSO RECEIVES VALUABLE INFORMATION TO UPDATE THE USER INSTANTLY.
+  const pingServer = async () => {
+    if (getStoredUserObject()) {
+      const updatedUser = await pingLocation(getStoredUserObject());
+      if (updatedUser) {
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+    }
+  };
   setInterval(async () => {
     pingServer();
   }, 2000);
-
-  ///////////////////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // THIS CREATES ELEMENTS
   const createElements = (type, attributes, ...children) => {
@@ -40,21 +63,13 @@ window.addEventListener("DOMContentLoaded", () => {
     return element;
   };
 
-  // THIS SENDS A PING TO THE DATABASE AND TELLS IT WHICH USER IS CURRENTLY LOGGED IN. IT ALSO RECEIVES VALUABLE INFORMATION TO UPDATE THE USER INSTANTLY.
-  const pingServer = async () => {
-    if (storedUser()) {
-      const updatedUser = await pingLocation(storedUser());
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-    }
-  };
-
   // THIS SENDS A REQUEST TO SHORTEN A URL, AND THEN GETS THAT SHORTENED URL
   const getShortURL = async (isLogged) => {
     const urlInput = document.querySelector("#url-input");
     const url = urlInput.value;
     let shortenedUrl;
     if (isLogged) {
-      shortenedUrl = await shortenURLrequest(url, storedUser());
+      shortenedUrl = await shortenURLrequest(url, getStoredUserObject());
     } else {
       shortenedUrl = await shortenURLrequest(url);
     }
@@ -68,14 +83,15 @@ window.addEventListener("DOMContentLoaded", () => {
     );
     if (isLogged) {
       await pingServer();
-      renderStatsList(storedUser());
+      renderStatsList(getStoredUserObject());
     } else {
       renderStatsList();
     }
     urlPresentor.appendChild(resultedLink);
   };
 
-  // STATS LIST: A FUNCTION BUILT OUT OF FUNCTIONS
+  // RENDER STATS LIST: A FUNCTION BUILT OUT OF FUNCTIONS
+
   const renderAllShortLinks = async (allUrls) => {
     allUrls.forEach((url) => {
       link_list_item = createElements(
@@ -145,27 +161,30 @@ window.addEventListener("DOMContentLoaded", () => {
   };
   const renderAllCounts = async (allUrls, userObj) => {
     if (!allUrls || userObj) {
+      // checks if received a user object or only urls
       allUrls = [];
       userObj.urls.forEach((element) => {
+        // take the urls from user object and turn them into the regular ol' allUrls array.
         allUrls.push(element.long);
       });
     }
-    const allCounts = await getClickStatistics();
-    clearStatsList("SPAN");
+    const allCounts = await getClickStatistics(); // getClickStatistics() will fetch the statistics.json file, receieving an array with shortened IDs
+    clearStatsList("SPAN"); // clear the "span" elements - as in, all the "redirect count" from the stats table.
     const allIDs = document.querySelectorAll(".stored-id");
     const countsArray = [];
     allIDs.forEach((shortID) => {
+      // for each ID, check how many clicks it got and assign the info as an object
       let count = 0;
-      for (let j = 0; j < allCounts.length; j++) {
-        if (shortID.textContent === allCounts[j]) {
+      allCounts.forEach((counter) => {
+        if (shortID.textContent === counter) {
           count++;
         }
-      }
+      });
       countsArray.push({ id: shortID.textContent, count });
     });
 
     let counter = 0;
-
+    // do what we always do with data: PUT IT IN A FKIN TABLE
     allUrls.forEach((url) => {
       id = url.urlCode;
       count = createElements(
@@ -185,8 +204,26 @@ window.addEventListener("DOMContentLoaded", () => {
       counter++;
     });
   };
+  const renderAllDates = async (allUrls) => {
+    allUrls.forEach((url) => {
+      date_list_item = createElements(
+        "li",
+        {
+          class: "date-list-items",
+        },
+        createElements(
+          "p",
+          {
+            class: "stored-date",
+          },
+          `${url.creationDate}`
+        )
+      );
+      creationDateList.appendChild(date_list_item);
+    });
+  };
 
-  // CLEAR STATS LIST
+  // THIS FUNCTION CLEARS THE STATS LIST
   const clearStatsList = async (...elements) => {
     let nodeLists = [];
     elements.forEach((element) => {
@@ -197,45 +234,84 @@ window.addEventListener("DOMContentLoaded", () => {
       while (nodeList[0]) nodeList[0].parentNode.removeChild(nodeList[0]);
     });
   };
-  // RENDER ACTUAL "STATS" LIST
+
+  // RENDER ACTUAL STATS LIST
   const renderStatsList = async (user) => {
     if (user) {
+      // pingLocation(user) - lets the server know who is the user that is currently logged in, to updated it accordingly.
       await pingLocation(user);
     }
-    clearStatsList("LI", "DETAILS");
+
+    clearStatsList("LI", "DETAILS"); // clear the stats list to avoid double-rendering
+
     let allUrlObjects;
     if (user) {
       allUrlObjects = user.urls;
     } else {
-      allUrlObjects = await getAllUrlObjects();
+      allUrlObjects = await getAllUrlObjects(); // if no user is currently signed in, this will get a list of all the default bin's URL objects
     }
+
     renderAllShortLinks(allUrlObjects);
     renderAllLongLinks(allUrlObjects);
     renderAllLinkIDs(allUrlObjects);
     renderAllCounts(allUrlObjects);
+    renderAllDates(allUrlObjects);
   };
 
   // SIGN IN TO SERVICE
   const logUserInFromClient = async (username, password) => {
     const passwordInput = document.querySelector("#password-input").value;
     const usernameInput = document.querySelector("#username-input").value;
+    welcomeTag.style.display = "flex";
     if (username && password) {
-      user = await logIntoService(username, password);
+      user = await logIntoService(username, password); // sends a request to the main server to authenticate the user
     } else {
+      /// This is about whether or not the user is currently "remembered"
       user = await logIntoService(usernameInput, passwordInput);
     }
-    await pingLocation(user);
+    await pingLocation(user); // let DBserver know this is indeed the user that needs to be updated.
     if (!user.urls) {
       return;
     }
-    renderStatsList(user);
-    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("user", JSON.stringify(user)); // remember user
+    renderStatsList(user); // render relevant stats for user
+    await greetSignedInUser(); // greet user
   };
 
   // SIGN OUT OF SERVICE
+  const signUserOutFromClient = async () => {
+    localStorage.removeItem("user");
+    renderStatsList();
+    greetSignedInUser("loggingOut"); // remove user greeting
+  };
+
+  // GREET THE USER THAT'S CURRENTLY LOGGED IN
+  const greetSignedInUser = async (loggingOut) => {
+    const alreadyWelcomed = document.querySelector(
+      "#greet-user > h1.welcome-h1"
+    );
+    if (loggingOut) {
+      // if signing out, remove welcome tag completely
+      welcomeTag.style.display = "none";
+    } else if (alreadyWelcomed) {
+      // remove the old welcome tag first
+      alreadyWelcomed.remove();
+    }
+    if (getStoredUserObject()) {
+      // add a new welcome tag if user exists
+      const greetUser = createElements(
+        // render user's name
+        "h1",
+        { class: "welcome-h1" },
+        `${getStoredUserObject().username}`
+      );
+      welcomeTag.appendChild(greetUser);
+    }
+  };
+
   //////////////////////////////// EVENT LISTENERS //////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //SHORTEN A LINK
+  // SHORTEN A LINK
   inputButton.addEventListener("click", () => {
     const existingUrl = document.querySelector("#shortened-url");
     const urlPresentorPlaceholder = document.querySelector(
@@ -254,7 +330,7 @@ window.addEventListener("DOMContentLoaded", () => {
     urlPresentorPlaceholder.hidden = true;
   });
 
-  //REGISTER TO SERVICE
+  // REGISTER TO SERVICE
   registerButton.addEventListener("click", async () => {
     const passwordInput = document.querySelector("#password-input").value;
     const usernameInput = document.querySelector("#username-input").value;
@@ -262,24 +338,40 @@ window.addEventListener("DOMContentLoaded", () => {
     logUserInFromClient(usernameInput, passwordInput);
     localStorage.setItem("user", JSON.stringify(user));
   });
-  //LOG IN TO SERVICE
-  logInButton.addEventListener("click", () => {
-    logUserInFromClient();
+  // LOG IN TO SERVICE
+  logInButton.addEventListener("click", async () => {
+    await logUserInFromClient();
   });
 
-  const linkUl = document.querySelector("#links");
-  linkUl.addEventListener("click", async (e) => {
+  // LOG OUT OF SERVICE
+  logOutButton.addEventListener("click", async () => {
+    signUserOutFromClient();
+  });
+
+  // UPDATE REDIRECT COUNT COLUMN OF STAT LIST WHENEVER SOMEONE CLICKS A LINK
+  linkUl.addEventListener("mouseup", async (e) => {
     if (e.target.tagName !== "A") {
       return;
     }
-    await renderAllCounts(null, storedUser());
+    await pingServer(); // fetch info from server and update localstorage.
+    await renderAllCounts(null, getStoredUserObject()); // render count column
   });
+
+  // UPDATE REDIRECT COUNT COLUMN OF STAT LIST WHENEVER SOMEONE CLICKS THE PRESENTED LINK (BIG ONE ABOVE STAT LIST)
   urlPresentor.addEventListener("click", async (e) => {
-    if (e.target.tagName !== "A") {
-      return;
-    }
-    await renderAllCounts(null, storedUser());
+    renderAllCounts(null, getStoredUserObject());
   });
 
-  renderStatsList(storedUser());
+  ///////////////////////////////////////////////// AUTOMATIC RENDERINGS WHEN PAGE LOADS ////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // STAT LIST
+  renderStatsList(getStoredUserObject()); // renders with the stored user if there is one. else, renders default.
+
+  // WELCOME TAG
+  if (getStoredUserObject()) {
+    greetSignedInUser();
+  } else {
+    welcomeTag.style.display = "none";
+  }
 });
