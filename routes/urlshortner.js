@@ -37,7 +37,7 @@ router.use(
 );
 router.put("/api/shorturl/", async (req, res, next) => {
   const { longUrl, id } = req.body;
-  const baseUrl = "https://Url-Shortener-Task.korenezri.repl.co";
+  const baseUrl = "http://localhost:3000";
   const urlCode = shortid.generate();
   let urls;
   let alreadyShortened;
