@@ -1,4 +1,4 @@
-const base_request_url = location.origin;
+const base_request_url = "http://localhost:3001";
 const main_request_url = "https://Url-Shortener-Task.korenezri.repl.co"
 
 const shortenURLrequest = async (longUrl, user) => {

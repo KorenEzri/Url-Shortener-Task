@@ -1,6 +1,6 @@
 //GET ALL URLS - DEFAULT BIN :)
 const axios = require("axios");
-const base_url = location.origin;
+const base_url = "http://localhost:3001";
 
 const readBin = async (location) => {
   if (process.env.NODE_ENV === "test") {
