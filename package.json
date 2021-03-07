@@ -4,9 +4,9 @@
   "description": "API project for freeCodeCamp",
   "main": "./index.js",
   "scripts": {
-    "database": "node backend/server.js",
+    "database": "node ./backend/server.js",
     "main": "node index.js",
-    "start": "npm run main",
+    "start": "concurrently \"npm run main\" \"npm run database\"",
     "dev": "nodemon index.js",
     "test": "jest --verbose"
   },

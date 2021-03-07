@@ -17,13 +17,6 @@ if (process.env.NODE_ENV === "test") {
   logTo = "routes/test-statistics.json";
 }
 
-app.use((req, res, next) => {
-  res.append('Access-Control-Allow-Origin', '*');
-  res.append('Access-Control-Allow-Headers', 'Content-Type');
-  res.set('Access-Control-Expose-Headers', '*')
-  next();
-})
-
 app.use(
   expressWinston.logger({
     transports: [
