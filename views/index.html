@@ -8,6 +8,7 @@
     <script src="../public/client.js"></script>
     <script src="../public/utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.all.min.js"></script>
   </head>
   <body>
     <h1>URL Shortener Microservice</h1>
@@ -46,12 +47,26 @@
         </div>
         <section id="registration">
           <label for="enter-username">Usesrname</label>
-          <input type="text" name="username" id="username-input" />
+          <input
+            type="text"
+            name="username"
+            id="username-input"
+            class="registration-inputs"
+            placeholder="Username goes here!"
+          />
           <label for="enter-password">Password</label>
-          <input type="password" name="password" id="password-input" />
-          <button id="register-button">Register</button>
-          <button id="login-button">Log in</button>
-          <button id="logout-button">Log out</button>
+          <input
+            type="password"
+            name="password"
+            id="password-input"
+            class="registration-inputs"
+            placeholder="Password goes here!"
+          />
+          <button id="register-button" class="register-buttons">
+            Register
+          </button>
+          <button id="login-button" class="register-buttons">Log in</button>
+          <button id="logout-button" class="register-buttons">Log out</button>
         </section>
       </div>
     </main>
