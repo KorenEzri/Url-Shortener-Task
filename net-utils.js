@@ -23,7 +23,6 @@ const readBin = async (location) => {
     } else if (location === "users") {
       return data.record;
     } else if (!data.record[0]) {
-      console.log(data);
       return data;
     } else {
       for (let i = 0; i < binDataArray.length; i++) {
@@ -50,6 +49,7 @@ const addToBin = async (url, location) => {
     }
   }
   if (Array.isArray(allUrls)) {
+    console.log(url, allUrls, location);
     allUrls.push(url);
   } else {
     allUrls = allUrls.record;

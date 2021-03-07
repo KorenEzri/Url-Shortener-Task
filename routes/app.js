@@ -66,7 +66,8 @@ app.put("/ping", async (req, res) => {
 const saltRounds = 10;
 
 app.get("/:shortUrl", async (req, res) => {
-  const allUrls = await netUtils.readBin(location);
+  console.log(location);
+  let allUrls = await netUtils.readBin(location);
   let shortUrlCode = req.params.shortUrl;
   let index = allUrls.findIndex((url) => url.urlCode === shortUrlCode);
   const fullUrlObject = allUrls[index];
@@ -126,6 +127,9 @@ app.put("/login", async (req, res) => {
     } else {
       findUser = fileData.find((user) => user.username === username);
     }
+    if (!findUser) {
+      res.status(200).send("User not found!");
+    }
     const hash = findUser.password;
     await bcrypt.compare(password, hash, async function (err, result) {
       if (result == true) {
@@ -147,21 +151,24 @@ app.put("/login", async (req, res) => {
 });
 
 app.put("/clicks", async (req, res) => {
+  const { user } = req;
   try {
     if (process.env.NODE_ENV === "test") {
-      location = "test-statistics";
+      statsLocation = "test-statistics";
     } else {
-      location = "statistics";
+      statsLocation = "statistics";
     }
-    const clickStatistics = [];
     const loggerFile = fs.readFile(
-      `routes/${location}.json`,
+      `routes/${statsLocation}.json`,
       "utf8",
       (err, stats) => {
         const { level, message, originalUrl, ...meta } = stats;
         const splatStat = stats.split(",");
         const result = [];
         const urls = stats.match(/\b \/.*/g);
+        if (!urls) {
+          return res.status(200).send(result);
+        }
         urls.forEach((url) => {
           pureUrl = url.substring(2, url.length - 2);
           result.push(pureUrl);
