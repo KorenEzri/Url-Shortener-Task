@@ -1,6 +1,6 @@
 //GET ALL URLS - DEFAULT BIN :)
 const axios = require("axios");
-const base_url = "http://localhost:3001";
+const base_url = "https://korenezri-jsondb.herokuapp.com";
 
 const readBin = async (location) => {
   if (process.env.NODE_ENV === "test") {

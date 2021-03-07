@@ -11,11 +11,18 @@ const controller = require("../controller");
 const fs = require("fs");
 const expressWinston = require("express-winston");
 const winston = require("winston");
-
+const dirname = '/home/runner/Url-Shortener-Task/'
 let logTo = "routes/statistics.json";
 if (process.env.NODE_ENV === "test") {
   logTo = "routes/test-statistics.json";
 }
+
+app.use((req, res, next) => {
+  res.append('Access-Control-Allow-Origin', '*');
+  res.append('Access-Control-Allow-Headers', 'Content-Type');
+  res.set('Access-Control-Expose-Headers', '*')
+  next();
+})
 
 app.use(
   expressWinston.logger({
@@ -49,7 +56,7 @@ app.use(express.json());
 app.use("/public", express.static(`./public`));
 app.use(shortURL.router);
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/views/index.html");
+  res.sendFile(dirname + "/views/index.html");
 });
 app.use(helmet());
 app.use(morgan("tiny"));
