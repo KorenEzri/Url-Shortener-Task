@@ -35,9 +35,16 @@ router.use(
     preflightContinue: true,
   })
 );
+
+router.use((req, res, next) => {
+  res.append('Access-Control-Allow-Origin', '*');
+  res.append('Access-Control-Allow-Headers', 'Content-Type');
+  res.set('Access-Control-Expose-Headers', '*')
+  next();
+})
 router.put("/api/shorturl/", async (req, res, next) => {
   const { longUrl, id } = req.body;
-  const baseUrl = "https://Url-Shortener-Task.korenezri.repl.co";
+  const baseUrl = "https://cors-anywhere.herokuapp.com/https://Url-Shortener-Task.korenezri.repl.co";
   const urlCode = shortid.generate();
   let urls;
   let alreadyShortened;
