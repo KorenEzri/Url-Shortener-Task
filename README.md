@@ -10,6 +10,9 @@ Also, the password and user authentication system works on hashes and encryption
 
 ## Features
 
+# Now also available in Chrome Extention form:
+![](extentiongif.gif)
+
 * Responsive
 * Fully implemented sign-up form that allows you to log-in and your shortened URLs.
 * Copy links with the click of a button!
