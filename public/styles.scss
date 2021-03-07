@@ -21,7 +21,7 @@ body * {
 
 #input-section {
   user-select: none;
-
+  transition: 600ms;
   #greet-user {
     display: flex;
     font-size: 1rem;

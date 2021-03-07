@@ -3,6 +3,9 @@ const axios = require("axios");
 const base_url = "http://localhost:3001";
 
 const readBin = async (location) => {
+  if (process.env.NODE_ENV === "test") {
+    location = "test";
+  }
   if (!location) location = "default";
   const allUrls = [];
   try {
@@ -46,6 +49,7 @@ const addToBin = async (url, location) => {
     }
   }
   if (Array.isArray(allUrls)) {
+    console.log(url, allUrls, location);
     allUrls.push(url);
   } else {
     allUrls = allUrls.record;

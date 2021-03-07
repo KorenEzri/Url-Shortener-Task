@@ -9,22 +9,13 @@ const morgan = require("morgan");
 const bcrypt = require("bcrypt");
 const controller = require("../controller");
 const fs = require("fs");
-const path = require("path");
 const expressWinston = require("express-winston");
 const winston = require("winston");
 
-// app.use(
-//   morgan("common", {
-//     stream: fs.createWriteStream(path.join(__dirname, "statistics.log"), {
-//       flags: "a",
-//       skip: function (req, res) {
-//         if (req.method !== "GET") {
-//           return true;
-//         }
-//       },
-//     }),
-//   })
-// );
+let logTo = "routes/statistics.json";
+if (process.env.NODE_ENV === "test") {
+  logTo = "routes/test-statistics.json";
+}
 
 app.use(
   expressWinston.logger({
@@ -35,7 +26,7 @@ app.use(
       }),
       new winston.transports.File({
         name: "access-file",
-        filename: "routes/statistics.json",
+        filename: logTo,
         level: "info",
         format: winston.format.json(),
       }),
@@ -47,7 +38,6 @@ app.use(
     },
   })
 );
-
 app.use(
   cors({
     allowedHeaders: ["Content-Type"],
@@ -64,6 +54,7 @@ app.get("/", (req, res) => {
 app.use(helmet());
 app.use(morgan("tiny"));
 let location;
+
 app.put("/ping", async (req, res) => {
   location = req.body.id;
   const oldUser = req.body;
@@ -75,12 +66,11 @@ app.put("/ping", async (req, res) => {
 const saltRounds = 10;
 
 app.get("/:shortUrl", async (req, res) => {
-  const allUrls = await netUtils.readBin(location);
+  console.log(location);
+  let allUrls = await netUtils.readBin(location);
   let shortUrlCode = req.params.shortUrl;
   let index = allUrls.findIndex((url) => url.urlCode === shortUrlCode);
-  console.log(index);
   const fullUrlObject = allUrls[index];
-  console.log(fullUrlObject);
   let longUrl = allUrls[index].long;
   try {
     if (longUrl) {
@@ -137,6 +127,9 @@ app.put("/login", async (req, res) => {
     } else {
       findUser = fileData.find((user) => user.username === username);
     }
+    if (!findUser) {
+      res.status(200).send("User not found!");
+    }
     const hash = findUser.password;
     await bcrypt.compare(password, hash, async function (err, result) {
       if (result == true) {
@@ -158,16 +151,24 @@ app.put("/login", async (req, res) => {
 });
 
 app.put("/clicks", async (req, res) => {
+  const { user } = req;
   try {
-    const clickStatistics = [];
+    if (process.env.NODE_ENV === "test") {
+      statsLocation = "test-statistics";
+    } else {
+      statsLocation = "statistics";
+    }
     const loggerFile = fs.readFile(
-      "routes/statistics.json",
+      `routes/${statsLocation}.json`,
       "utf8",
       (err, stats) => {
         const { level, message, originalUrl, ...meta } = stats;
         const splatStat = stats.split(",");
         const result = [];
         const urls = stats.match(/\b \/.*/g);
+        if (!urls) {
+          return res.status(200).send(result);
+        }
         urls.forEach((url) => {
           pureUrl = url.substring(2, url.length - 2);
           result.push(pureUrl);
@@ -179,4 +180,5 @@ app.put("/clicks", async (req, res) => {
     console.error(error);
   }
 });
+
 module.exports = app;

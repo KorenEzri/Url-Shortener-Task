@@ -7,6 +7,9 @@ class DataBase {
   }
 
   saveUrl(url, location) {
+    if (process.env.NODE_ENV === "test") {
+      location = "test";
+    }
     if (location) {
       netUtils.addToBin(url, location);
     } else {
@@ -14,13 +17,7 @@ class DataBase {
     }
   }
 
-  updateUrl() {}
-
   deleteUrl() {}
-
-  // register(username, password) {
-  //   netUtils.registerToService(username, password);
-  // }
 }
 
 class Url {

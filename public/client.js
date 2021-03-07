@@ -1,6 +1,5 @@
 window.addEventListener("DOMContentLoaded", () => {
   // CONSTS
-
   //BUTTONS
   const inputButton = document.querySelector("#input-button");
   const registerButton = document.querySelector("#register-button");
@@ -160,7 +159,11 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   };
   const renderAllCounts = async (allUrls, userObj) => {
-    if (!allUrls || userObj) {
+    const allLinks = document.querySelector("#links");
+    if (allLinks.getElementsByTagName("LI").length < 1) {
+      return;
+    }
+    if (!allUrls && userObj) {
       // checks if received a user object or only urls
       allUrls = [];
       userObj.urls.forEach((element) => {
@@ -182,9 +185,11 @@ window.addEventListener("DOMContentLoaded", () => {
       });
       countsArray.push({ id: shortID.textContent, count });
     });
-
     let counter = 0;
     // do what we always do with data: PUT IT IN A FKIN TABLE
+    if (!allUrls) {
+      allUrls = [document.querySelectorAll(".stored-id")[0]];
+    }
     allUrls.forEach((url) => {
       id = url.urlCode;
       count = createElements(
@@ -241,16 +246,13 @@ window.addEventListener("DOMContentLoaded", () => {
       // pingLocation(user) - lets the server know who is the user that is currently logged in, to updated it accordingly.
       await pingLocation(user);
     }
-
     clearStatsList("LI", "DETAILS"); // clear the stats list to avoid double-rendering
-
     let allUrlObjects;
     if (user) {
       allUrlObjects = user.urls;
     } else {
       allUrlObjects = await getAllUrlObjects(); // if no user is currently signed in, this will get a list of all the default bin's URL objects
     }
-
     renderAllShortLinks(allUrlObjects);
     renderAllLongLinks(allUrlObjects);
     renderAllLinkIDs(allUrlObjects);
@@ -262,13 +264,17 @@ window.addEventListener("DOMContentLoaded", () => {
   const logUserInFromClient = async (username, password) => {
     const passwordInput = document.querySelector("#password-input").value;
     const usernameInput = document.querySelector("#username-input").value;
-    welcomeTag.style.display = "flex";
     if (username && password) {
       user = await logIntoService(username, password); // sends a request to the main server to authenticate the user
     } else {
       /// This is about whether or not the user is currently "remembered"
       user = await logIntoService(usernameInput, passwordInput);
+      if (user === "User not found!") {
+        return alert("User not found!");
+      }
     }
+    welcomeTag.style.display = "flex";
+
     await pingLocation(user); // let DBserver know this is indeed the user that needs to be updated.
     if (!user.urls) {
       return;
@@ -334,8 +340,10 @@ window.addEventListener("DOMContentLoaded", () => {
   registerButton.addEventListener("click", async () => {
     const passwordInput = document.querySelector("#password-input").value;
     const usernameInput = document.querySelector("#username-input").value;
+
     await registerToService(usernameInput, passwordInput);
     logUserInFromClient(usernameInput, passwordInput);
+    clearStatsList("SPAN");
     localStorage.setItem("user", JSON.stringify(user));
   });
   // LOG IN TO SERVICE

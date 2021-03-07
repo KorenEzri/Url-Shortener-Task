@@ -88,6 +88,9 @@ const getClickStatistics = async (user) => {
       url: `${main_request_url}/clicks`,
       data: user,
     });
+    if (!data) {
+      return;
+    }
     return data;
   } catch ({ message }) {
     console.log(message);
