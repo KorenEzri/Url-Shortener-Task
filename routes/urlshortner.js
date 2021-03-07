@@ -44,7 +44,7 @@ router.use((req, res, next) => {
 })
 router.put("/api/shorturl/", async (req, res, next) => {
   const { longUrl, id } = req.body;
-  const baseUrl = "https://cors-anywhere.herokuapp.com/https://Url-Shortener-Task.korenezri.repl.co";
+  const baseUrl = "https://Url-Shortener-Task.korenezri.repl.co";
   const urlCode = shortid.generate();
   let urls;
   let alreadyShortened;
