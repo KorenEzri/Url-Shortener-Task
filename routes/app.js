@@ -12,6 +12,11 @@ const fs = require("fs");
 const expressWinston = require("express-winston");
 const winston = require("winston");
 
+let logTo = "routes/statistics.json";
+if (process.env.NODE_ENV === "test") {
+  logTo = "routes/test-statistics.json";
+}
+
 app.use(
   expressWinston.logger({
     transports: [
@@ -21,7 +26,7 @@ app.use(
       }),
       new winston.transports.File({
         name: "access-file",
-        filename: "routes/statistics.json",
+        filename: logTo,
         level: "info",
         format: winston.format.json(),
       }),
@@ -143,9 +148,14 @@ app.put("/login", async (req, res) => {
 
 app.put("/clicks", async (req, res) => {
   try {
+    if (process.env.NODE_ENV === "test") {
+      location = "test-statistics";
+    } else {
+      location = "statistics";
+    }
     const clickStatistics = [];
     const loggerFile = fs.readFile(
-      "routes/statistics.json",
+      `routes/${location}.json`,
       "utf8",
       (err, stats) => {
         const { level, message, originalUrl, ...meta } = stats;

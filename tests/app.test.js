@@ -11,6 +11,7 @@ const alreadyShortenedUrl =
   "https://stackoverflow.com/questions/48248832/stylesheet-not-loaded-because-of-mime-type";
 let oldCount;
 let oldShortID;
+
 describe("URL SHORTENER API", () => {
   it("should be able to get shortened URL", async (done) => {
     let longUrl = testUrl;
@@ -38,20 +39,23 @@ describe("URL SHORTENER API", () => {
   });
   it("should return the existing shortened URL if the link has already been shortened. ", async (done) => {
     let longUrl = alreadyShortenedUrl;
-    let requestBody = { longUrl };
+    let requestBody = { id: "test", longUrl };
     const oldShortenResponse = await request
       .put("/api/shorturl/")
       .send(requestBody);
     const response = await request.put("/api/shorturl/").send(requestBody);
+    const secondResponse = await request
+      .put("/api/shorturl/")
+      .send(requestBody);
+
     urlObj = JSON.parse(oldShortenResponse.text);
     shortUrl = urlObj.short;
     oldShortID = urlObj.urlCode;
-    expect(response.status).toBe(200);
-    expect(JSON.parse(response.text).short).toBe(shortUrl);
+    expect(secondResponse.status).toBe(200);
+    expect(JSON.parse(secondResponse.text).short).toBe(shortUrl);
     done();
   });
   it("should redirect the user to the relevant longUrl", async (done) => {
-    console.log(oldShortID);
     const response = await mainServerRequest.get(`/${oldShortID}`);
     const { headers } = response;
     expect(headers).toHaveProperty("location");

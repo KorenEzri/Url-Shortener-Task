@@ -3,6 +3,9 @@ const axios = require("axios");
 const base_url = "http://localhost:3001";
 
 const readBin = async (location) => {
+  if (process.env.NODE_ENV === "test") {
+    location = "test";
+  }
   if (!location) location = "default";
   const allUrls = [];
   try {
@@ -20,6 +23,7 @@ const readBin = async (location) => {
     } else if (location === "users") {
       return data.record;
     } else if (!data.record[0]) {
+      console.log(data);
       return data;
     } else {
       for (let i = 0; i < binDataArray.length; i++) {
