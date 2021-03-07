@@ -49,7 +49,11 @@ const registerToService = async (username, password) => {
       url: `${main_request_url}/register`,
       data: { username, password },
     });
-    return alert(`Successfully registered as: ${username}`);
+    return swal.fire({
+      icon: "success",
+      title: `Successfully registered as: ${username}`,
+      showConfirmButton: true,
+    });
   } catch ({ message }) {
     console.log(message);
   }

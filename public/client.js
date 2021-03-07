@@ -17,6 +17,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const urlPresentor = document.querySelector("#url-presentor");
   // WELCOME TAG
   const welcomeTag = document.querySelector("#greet-user");
+  // URL INPUT FIELD
+  const urlInputField = document.querySelector("#url-input");
   // LOCALSTORAGE AND USER AUTH FUNCS AND VARIABLES
   let user;
 
@@ -73,7 +75,16 @@ window.addEventListener("DOMContentLoaded", () => {
       shortenedUrl = await shortenURLrequest(url);
     }
     if (!shortenedUrl) {
-      return alert("Invalid URL");
+      Swal.fire({
+        icon: "error",
+        title: "Invalid URL",
+        timer: 1500,
+        showConfirmButton: false,
+        toast: true,
+      });
+      urlInput.value = "";
+      urlInput.focus();
+      return;
     }
     const resultedLink = createElements(
       "a",
@@ -172,7 +183,6 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
     const allCounts = await getClickStatistics(); // getClickStatistics() will fetch the statistics.json file, receieving an array with shortened IDs
-    clearStatsList("SPAN"); // clear the "span" elements - as in, all the "redirect count" from the stats table.
     const allIDs = document.querySelectorAll(".stored-id");
     const countsArray = [];
     allIDs.forEach((shortID) => {
@@ -186,6 +196,8 @@ window.addEventListener("DOMContentLoaded", () => {
       countsArray.push({ id: shortID.textContent, count });
     });
     let counter = 0;
+    clearStatsList("SPAN"); // clear the "span" elements - as in, all the "redirect count" from the stats table.
+
     // do what we always do with data: PUT IT IN A FKIN TABLE
     if (!allUrls) {
       allUrls = [document.querySelectorAll(".stored-id")[0]];
@@ -205,6 +217,7 @@ window.addEventListener("DOMContentLoaded", () => {
           `${countsArray[counter].count}`
         )
       );
+
       linkRedirectCountList.appendChild(count);
       counter++;
     });
@@ -267,10 +280,25 @@ window.addEventListener("DOMContentLoaded", () => {
     if (username && password) {
       user = await logIntoService(username, password); // sends a request to the main server to authenticate the user
     } else {
+      if (!passwordInput || !usernameInput) {
+        passwordInput.textContent = "";
+        usernameInput.textContent = "";
+        return Swal.fire({
+          position: "top-center",
+          icon: "error",
+          title: "Please enter a valid username and password",
+          showConfirmButton: true,
+        });
+      }
       /// This is about whether or not the user is currently "remembered"
       user = await logIntoService(usernameInput, passwordInput);
       if (user === "User not found!") {
-        return alert("User not found!");
+        return Swal.fire({
+          position: "top-center",
+          icon: "error",
+          title: "User not found!",
+          showConfirmButton: true,
+        });
       }
     }
     welcomeTag.style.display = "flex";
@@ -318,6 +346,12 @@ window.addEventListener("DOMContentLoaded", () => {
   //////////////////////////////// EVENT LISTENERS //////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // SHORTEN A LINK
+  urlInputField.focus();
+  urlInputField.onkeyup = (event) => {
+    if (event.keyCode == 13 || event.which == 13) {
+      inputButton.click();
+    }
+  };
   inputButton.addEventListener("click", () => {
     const existingUrl = document.querySelector("#shortened-url");
     const urlPresentorPlaceholder = document.querySelector(
@@ -340,7 +374,14 @@ window.addEventListener("DOMContentLoaded", () => {
   registerButton.addEventListener("click", async () => {
     const passwordInput = document.querySelector("#password-input").value;
     const usernameInput = document.querySelector("#username-input").value;
-
+    if (!passwordInput || !usernameInput) {
+      return Swal.fire({
+        position: "top-center",
+        icon: "error",
+        title: "Please choose a username and password",
+        showConfirmButton: true,
+      });
+    }
     await registerToService(usernameInput, passwordInput);
     logUserInFromClient(usernameInput, passwordInput);
     clearStatsList("SPAN");
@@ -363,6 +404,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
     await pingServer(); // fetch info from server and update localstorage.
     await renderAllCounts(null, getStoredUserObject()); // render count column
+    await renderAllCounts();
   });
 
   // UPDATE REDIRECT COUNT COLUMN OF STAT LIST WHENEVER SOMEONE CLICKS THE PRESENTED LINK (BIG ONE ABOVE STAT LIST)
