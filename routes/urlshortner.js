@@ -35,7 +35,6 @@ router.use(
     preflightContinue: true,
   })
 );
-
 router.put("/api/shorturl/", async (req, res, next) => {
   const { longUrl, id } = req.body;
   const baseUrl = "http://localhost:3000";
