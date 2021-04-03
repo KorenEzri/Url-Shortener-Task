@@ -1,5 +1,5 @@
 
-# A ToDo list - by Koren, a Cyber 4s Pre-course student
+# URL Shortener
 ![pic one](https://github.com/KorenEzri/Url-Shortener-Task/blob/alpha/register.PNG)
 
 # Introduction
