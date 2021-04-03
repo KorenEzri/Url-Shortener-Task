@@ -1,5 +1,5 @@
 
-# A ToDo list - by Koren, a Cyber 4s Pre-course student
+# URL Shortener
 ![pic one](https://github.com/KorenEzri/Url-Shortener-Task/blob/alpha/register.PNG)
 
 # Introduction
@@ -9,6 +9,9 @@ This is a URL shortener microservice. It runs on my own jsonbin.io mock using th
 Also, the password and user authentication system works on hashes and encryptions - safety first!
 
 ## Features
+
+# Now also available in Chrome Extention form:
+![](extentiongif.gif)
 
 * Responsive
 * Fully implemented sign-up form that allows you to log-in and your shortened URLs.
